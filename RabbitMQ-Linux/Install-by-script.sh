@@ -16,3 +16,4 @@ rabbitmqctl set_permissions -p / $username “.*” “.*” “.*”
 echo “################################ JUST FINAL SETUP PLEASE STAY PATIENT ############################”
 rabbitmqctl set_user_tags $username administrator
 echo “##############################RABBITMQ INSTALLED & CONFIGURED SUCESSFULLY ######################”
+# http://Your_Server_IP:15672/
