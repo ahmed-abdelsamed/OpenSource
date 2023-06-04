@@ -1,0 +1,125 @@
+## Install orlOTP
+## download rabbitmq zip not installer
+
+mkdir  c:\RabbitMQ 
+cd c:\RabbitMQ
+cd rabbitmq_server-3.9.10\
+> ls 
+rabitenv file 
+cd sbin\
+## like source in linux 
+>..\..\rabbitenv.bat 
+>rabbitmq-server.bat 
+------------------------
+## Download rabbitmqconfig example
+https://github.com/rabbitmq/rabbitmq-server/blob/main/deps/rabbit/docs/rabbitmq.conf.example
+mkdir c:\RabbitMQ\rabbitmq_server-3.9.10\config
+copy file to above path (rabbitmq.conf)
+
+still (rabbitmq-server.bat) on screen Ctrl+c
+ensure path of config file in envfile without extension in file only 
+>..\..\rabbitenv.bat 
+>rabbitmq-server.bat 
+
+Starting broker....     completed with 0 plugins.
+CTRL+C 
+--------------------------------------
+## Enable plugins 
+c:\RabbitMQ\rabbitmq_server-3.9.10\sbin>rabbitmq-plugins.bat enable rabbitmq_management
+
+.........>rabbitmq-server.bat 
+
+browser: localhost:15672
+guest/guest 
+
+-----------
+## Enable SSL 
+copy rabbitmq.conf and rabbitenv
+
+---------------------------------------
+rabbitmqctl add_user admin admin 
+rabbitmqctl set_user_tags admin adminstrator
+
+----------------------------
+##Cluster:
+copy folder config to two slave  nodes 
+copy rabitenv  to two slave nodes in D:\Sources\Rabbitmq\ 
+Node-2:
+change in config 
+managment.tcp.port = 15682
+Node-3
+
+change in config 
+managment.tcp.port = 15692
+
+Node1:
+rabbitenv_node2.bat 
+rabbitmq-server
+Ctrl+c
+rabbitmq-plugins.bat enable rabbitmq_management
+rabbitmq-server
+============
+Node-3:
+rabbitenv_node3.bat
+rabbitmq-server
+Ctrl+c
+rabbitmq-plugins.bat enable rabbitmq_management
+rabbitmq-server
+
+===============
+## All three nodes up and runnig
+open new cmd 
+cd node2 
+rabbitenv_node2.bat 
+
+NOTE: each sever has application into virtualhost 
+
+rabbitmqctl.bat  --node rabbit2@localhost  stop_app 
+Note: when refresh broswer (not found) but service is up 
+
+rabbitmqctl.bat --node rabbit2@localhost join_cluster rabbit1@localhost
+
+rabbitmqctl.bat  --node rabbit2@localhost  start_app 
+
+-------------------
+## Node-3
+rabbitenv_node3.bat 
+
+NOTE: each sever has application into virtualhost 
+
+rabbitmqctl.bat  --node rabbit3@localhost  stop_app 
+Note: when refresh broswer (not found) but service is up 
+
+rabbitmqctl.bat --node rabbit3@localhost join_cluster rabbit1@localhost
+
+rabbitmqctl.bat  --node rabbit3@localhost  start_app
+
+
+--------------------------------------
+### Change the cluster name to the same value in every node 
+from any UI 
+Change name: rabbit@dev.cluster.local 
+
+=======================================================
+copy cookie from node01 and paste in other nodes 
+Linux:cat /var/lib/rabbitmq/.erlang.cookie
+Windows: C:\Windows\System32\config\systemprofile\.erlang.cookie
+'HSXRAMEQAVBBBNNCRTEP'
+
+rabbitmq-server stop & rabbitmq-server start
+
+# Joind node2 and node3 to node1
+rabbitmq-server -detached
+rabbitmqctl join_cluster rabbit@node01
+'node01  hostname'
+
+from node01
+rabbitmqctl cluster_status
+
+## Rabbitmq HA Policy on all nodes
+rabbitmqctl set_policy ha-all "." '{"ha-mode":"all"}'
+
+# verify
+rabbitmqctl list_policies
+
+==================================================================
