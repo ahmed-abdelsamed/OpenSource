@@ -1,0 +1,19 @@
+## ElasticSearch Cluster on Windows
+elasticsearch/config/elasticsearch.yml
+'
+clusterr.name: elastic-cluster
+node.name: node-1
+http.port: 9200 # 9201
+cluster.initial_master_nodes: ["node-1","node-2","node-3"]
+'
+# If Cluster on the same cluster
+node.name: node-2
+http.port: 9202
+
+# If Cluster on the same cluster
+node.name: node-3
+http.port: 9203
+
+>elasticsearch.bat 
+http://localhost:9201/_cat/nodes?v
+
